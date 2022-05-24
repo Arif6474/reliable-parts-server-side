@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 5000;
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 // middleware
 app.use(cors());
@@ -20,13 +20,22 @@ async function run() {
   try {
     await client.connect();
     const partsCollection = client.db('reliable_parts').collection('parts');
-   
+     // get all parts
     app.get("/part" , async (req, res) => {
         const query ={}
         const cursor = partsCollection.find(query);
         const parts = await cursor.toArray();
         res.send(parts);
      })
+
+       //get part details
+    app.get('/part/:id' , async (req, res) => {
+        const id = req.params.id;
+        const query = {_id: ObjectId(id)}
+        const part= await partsCollection.findOne(query);
+        res.send(part);
+  
+      })  
   } finally {
    
    
