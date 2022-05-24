@@ -44,6 +44,14 @@ async function run() {
       res.send(result);
 
     });
+    // get my order 
+    app.get('/order', async (req, res) => {
+      const customer = req.body.customer;
+      const query = {customer : customer};
+      const order = await orderCollection.find(query).toArray();
+      res.send(order);
+
+    })
   } finally {
    
    
