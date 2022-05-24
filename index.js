@@ -20,7 +20,8 @@ async function run() {
   try {
     await client.connect();
     const partsCollection = client.db('reliable_parts').collection('parts');
-     // get all parts
+    const orderCollection = client.db('reliable_parts').collection('orders');
+     // get all parts 
     app.get("/part" , async (req, res) => {
         const query ={}
         const cursor = partsCollection.find(query);
@@ -36,6 +37,13 @@ async function run() {
         res.send(part);
   
       })  
+        // post order 
+     app.post('/order', async (req, res) => {
+      const order = req.body;
+      const result = await orderCollection.insertOne(order);
+      res.send(result);
+
+    });
   } finally {
    
    
