@@ -2,8 +2,11 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 5000;
 const cors = require('cors');
+const jwt = require('jsonwebtoken');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
+
+
 // middleware
 app.use(cors());
 app.use(express.json());
@@ -45,7 +48,7 @@ async function run() {
       res.send(result);
 
     });
-    // get my order 
+    // get my all order 
     app.get('/order', async (req, res) => {
       const customer = req.query.customer;
       const query = {customer : customer};
@@ -63,8 +66,9 @@ async function run() {
        $set: user
      };
      const result = await userCollection.updateOne(filter, updateDoc, options);
-    //  const token = jwt.sign({email : email} , process.env.ACCESS_TOKEN_SECRET , { expiresIn: '1h' })
-     res.send(result);
+     const token = jwt.sign({email : email} , process.env.ACCESS_TOKEN_SECRET , { expiresIn: '1h' })
+     
+     res.send({result, token});
     })
   } finally {
    
@@ -72,10 +76,6 @@ async function run() {
   }
 }
 run().catch(console.dir);
-
-
-
-
 
 
 app.listen(port, () => {
