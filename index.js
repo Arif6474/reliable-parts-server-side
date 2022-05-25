@@ -18,6 +18,20 @@ app.get('/', (req, res) =>{
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.tu9v0.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
+function verifyJWT(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if(!authHeader){
+    return res.status(401).send({ message : 'Invalid authorization'})
+  }
+  const token = authHeader.split(' ')[1]
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, function(err, decoded) {
+    if (err) {
+      return res.status(403).send({ message : 'Forbidden access'})
+    }
+    req.decoded = decoded;
+    next();
+  });
+}
 
 async function run() {
   try {
@@ -49,12 +63,16 @@ async function run() {
 
     });
     // get my all order 
-    app.get('/order', async (req, res) => {
+    app.get('/order',verifyJWT, async (req, res) => {
       const customer = req.query.customer;
-      const query = {customer : customer};
+      const decodedEmail = req.decoded.email;
+      if(customer === decodedEmail) {
+        const query = {customer : customer};
       const order = await orderCollection.find(query).toArray();
-      res.send(order);
-
+      return res.send(order);
+      }else{
+        return res.status(403).send({ message : 'Forbidden access'})
+      }
     })
     //post user info
     app.put('/user/:email', async (req, res) => {
