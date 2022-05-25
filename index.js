@@ -21,6 +21,7 @@ async function run() {
     await client.connect();
     const partsCollection = client.db('reliable_parts').collection('parts');
     const orderCollection = client.db('reliable_parts').collection('orders');
+    const userCollection = client.db('reliable_parts').collection('users');
      // get all parts 
     app.get("/part" , async (req, res) => {
         const query ={}
@@ -46,11 +47,24 @@ async function run() {
     });
     // get my order 
     app.get('/order', async (req, res) => {
-      const customer = req.body.customer;
+      const customer = req.query.customer;
       const query = {customer : customer};
       const order = await orderCollection.find(query).toArray();
       res.send(order);
 
+    })
+    //post user info
+    app.put('/user/:email', async (req, res) => {
+      const email = req.params.email;
+      const user = req.body;
+      const filter ={email: email};
+      const options = { upsert: true };
+      const updateDoc = {
+       $set: user
+     };
+     const result = await userCollection.updateOne(filter, updateDoc, options);
+    //  const token = jwt.sign({email : email} , process.env.ACCESS_TOKEN_SECRET , { expiresIn: '1h' })
+     res.send(result);
     })
   } finally {
    
