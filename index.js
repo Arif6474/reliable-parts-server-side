@@ -73,7 +73,7 @@ async function run() {
       }else{
         return res.status(403).send({ message : 'Forbidden access'})
       }
-    })
+    });
     //post user info
     app.put('/user/:email', async (req, res) => {
       const email = req.params.email;
@@ -87,14 +87,25 @@ async function run() {
      const token = jwt.sign({email : email} , process.env.ACCESS_TOKEN_SECRET , { expiresIn: '1h' })
      
      res.send({result, token});
-    })
+    });
     // get all user
-    app.get('/user' , verifyJWT, async (req, res) => {
+    app.get('/user', verifyJWT,   async (req, res) => {
       const query = {};
       const cursor = userCollection.find(query)
       const user = await cursor.toArray();
       res.send(user);
-    })
+    });
+    // create admin access api 
+    app.put('/user/admin/:email', async (req, res) => {
+      const email = req.params.email;
+      const filter ={email: email};
+      const updateDoc = {
+       $set: {role: 'admin'}
+      };
+      const result = await userCollection.updateOne(filter, updateDoc);
+     res.send(result);
+    });
+
     
   } finally {
    
