@@ -148,8 +148,13 @@ async function run() {
       res.send(review);
     });
 
-
-
+      // delete product
+      app.delete("/part/:id", async(req, res) =>{
+        const id = req.params.id;
+        const query = {_id: ObjectId(id)};
+        const result = await partsCollection.deleteOne(query);
+        res.send(result);
+    });
 
   } finally {
   }
