@@ -133,6 +133,13 @@ async function run() {
       const result = await reviewCollection.insertOne(review);
       res.send(result);
     });
+    // get all the reviews
+    app.get("/review", async (req, res) => {
+      const query = {};
+      const cursor = reviewCollection.find(query);
+      const review = await cursor.toArray();
+      res.send(review);
+    });
 
 
 
