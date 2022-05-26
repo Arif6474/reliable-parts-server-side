@@ -58,6 +58,13 @@ async function run() {
       const part = await partsCollection.findOne(query);
       res.send(part);
     });
+    // post parts 
+    app.post("/part", async (req, res) => {
+      const parts = req.body;
+      const result = await partsCollection.insertOne(parts);
+      res.send(result);
+    });
+
     // post order
     app.post("/order", async (req, res) => {
       const order = req.body;
