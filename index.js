@@ -127,7 +127,7 @@ async function run() {
       }
     });
 
-    // admin role
+    // get admin role
     app.get("/admin/:email", async (req, res) => {
       const email = req.params.email;
       const user = await userCollection.findOne({ email: email });
