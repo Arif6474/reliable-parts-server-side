@@ -100,6 +100,8 @@ async function run() {
       );
       res.send({ result, token });
     });
+
+
     // get all user
     app.get("/user", verifyJWT, async (req, res) => {
       const query = {};
@@ -155,6 +157,14 @@ async function run() {
         const result = await partsCollection.deleteOne(query);
         res.send(result);
     });
+
+        // get all orders
+        app.get("/orders", async (req, res) => {
+          const query = {};
+          const cursor = orderCollection.find(query);
+          const orders = await cursor.toArray();
+          res.send(orders);
+        });
 
   } finally {
   }
